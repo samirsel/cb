@@ -16,18 +16,17 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import app.models.OrderBook;
-
 @Service
-public class CryptoEchangeRestAPIService {
+public class CryptoEchangeRestApiServiceImpl implements CryptoExchangeRestApiService {
   private static String PRODUCT_ID_KEY = "productId";
   private static String LEVEL_KEY = "level";
 
   @Autowired
-  @Value("${app.Services.CryptoEchangeRestAPIService.GdaxRestHost}")
+  @Value("${app.Services.CryptoEchangeRestApiServiceImpl.GdaxRestHost}")
   private String GDAX_REST_HOST;
   private final RestTemplate mRestTemplate;
 
-  public CryptoEchangeRestAPIService(RestTemplateBuilder builder) {
+  public CryptoEchangeRestApiServiceImpl(RestTemplateBuilder builder) {
     mRestTemplate = builder.errorHandler(new ResponseErrorHandler() {
       @Override
       public boolean hasError(ClientHttpResponse response) throws IOException {
@@ -45,7 +44,7 @@ public class CryptoEchangeRestAPIService {
   public OrderBook getOrderBook(String productId, String level) {
     final String requestSubPath = "/products/{productId}/book?level={level}";
     final String fullRequestUrl = GDAX_REST_HOST + requestSubPath;
-    Map<String, String> vars = new HashMap<>();
+    final Map<String, String> vars = new HashMap<>();
     vars.put(PRODUCT_ID_KEY, productId);
     vars.put(LEVEL_KEY, level);
     return mRestTemplate.getForObject(fullRequestUrl, OrderBook.class, vars);

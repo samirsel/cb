@@ -19,7 +19,6 @@ public class CryptoExchangeController {
 
   @RequestMapping(value= "/quote", method = RequestMethod.POST)
   public ResponseEntity<Quote> quote(@Valid @RequestBody QuoteRequestBody quoteRequestBody) {
-    //Todo:sselman: Handle invalid request bodies...
     final Quote quote = mCryptoExchangeService.getPriceQuote(quoteRequestBody);
     return new ResponseEntity<>(quote, HttpStatus.OK);
   }
