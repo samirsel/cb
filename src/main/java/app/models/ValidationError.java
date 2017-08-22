@@ -1,4 +1,4 @@
-package app.Validations;
+package app.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,5 +38,4 @@ public class ValidationError {
   private ValidationError(String errorMessage) {
     this.errorMessage = errorMessage;
   }
-
 }

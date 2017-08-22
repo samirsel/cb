@@ -12,13 +12,9 @@ public class QuoteRequestBody {
     private String action;
 
     @NotBlank(message = "{org.hibernate.validator.constraints.NotBlank.BaseCurrencyMessage}")
-    @CheckStringVal(value = {"BTC","ETH", "LTC"},
-        message = "{app.Validations.CheckStringVal.BaseCurrencyMessage}")
     private String base_currency;
 
     @NotBlank(message = "{org.hibernate.validator.constraints.NotBlank.QuoteCurrencyMessage}")
-    @CheckStringVal(value = {"USD"},
-        message = "{app.Validations.CheckStringVal.QuoteCurrencyMessage}")
     private String quote_currency;
 
     @NotBlank(message = "{org.hibernate.validator.constraints.NotBlank.AmountMessage}")

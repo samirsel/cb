@@ -1,20 +1,14 @@
 package app.Services;
 
-import app.models.OrderBook;
-import app.models.QuoteRequestBody;
+import app.Validations.GdaxOrderBookException;
 
 public class CryptoServiceUtils {
-  private static String BUY_REQUEST_CODE = "buy";
   private static int INDEX_PRICE = 0;
   private static int INDEX_SIZE = 1;
   private static int INDEX_NUM_ORDERS = 2;
 
-  public static double calculatePrice(QuoteRequestBody quoteRequest, OrderBook orderBook) {
-    final double totalAmount = Double.valueOf(quoteRequest.getAmount()); // Eq 10 BTC;
-    double remainingAmount = totalAmount;
-
-    final Object[][] orders = quoteRequest.getAction().equalsIgnoreCase(BUY_REQUEST_CODE) ?
-        orderBook.getAsks() : orderBook.getBids();
+  public static double calculatePrice(double amount, Object[][] orders) {
+    double remainingAmount = amount;
 
     Double weightedSum = 0d;
     for (int i=0; i< orders.length && remainingAmount > 0; i++) {
@@ -37,7 +31,8 @@ public class CryptoServiceUtils {
     if (remainingAmount > 0) {
       //Todo:sselman: How to handle case where amount greater than open orders?
       // Maybe throw error Amount too big.
+      throw new GdaxOrderBookException("Add message here");
     }
-    return weightedSum / totalAmount;
+    return weightedSum / amount;
   }
 }

@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import app.models.OrderBook;
@@ -41,12 +43,14 @@ public class CryptoEchangeRestApiServiceImpl implements CryptoExchangeRestApiSer
     }).build();
   }
 
-  public OrderBook getOrderBook(String productId, String level) {
+  @Override
+  public ResponseEntity<OrderBook> getOrderBook(String productId, String level) throws
+      RestClientException {
     final String requestSubPath = "/products/{productId}/book?level={level}";
     final String fullRequestUrl = GDAX_REST_HOST + requestSubPath;
     final Map<String, String> vars = new HashMap<>();
     vars.put(PRODUCT_ID_KEY, productId);
     vars.put(LEVEL_KEY, level);
-    return mRestTemplate.getForObject(fullRequestUrl, OrderBook.class, vars);
+    return mRestTemplate.getForEntity(fullRequestUrl, OrderBook.class, vars);
   }
 }
