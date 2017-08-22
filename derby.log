@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Mon Aug 21 19:32:48 PDT 2017:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.13.1.1 - (1765088): instance a816c00e-015e-07c9-05ef-0000098a0210 
-on database directory memory:/Users/sselman/IdeaProjects/cryptoservice/testdb with class loader sun.misc.Launcher$AppClassLoader@18b4aac2 
+Tue Aug 22 14:10:12 PDT 2017:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.13.1.1 - (1765088): instance a816c00e-015e-0bc8-0909-00000a751f78 
+on database directory memory:/Users/sselman/IdeaProjects/cryptoservice/testdb with class loader sun.misc.Launcher$AppClassLoader@27bc2616 
 Loaded from file:/Users/sselman/.gradle/caches/modules-2/files-2.1/org.apache.derby/derby/10.13.1.1/29c42babe5c5463c6eea45487d3cfbfe8348ccd1/derby-10.13.1.1.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.8.0_111-b14

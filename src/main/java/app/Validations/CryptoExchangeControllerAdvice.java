@@ -1,5 +1,9 @@
 package app.Validations;
 
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +21,11 @@ import app.models.ValidationError;
 
 @ControllerAdvice
 public class CryptoExchangeControllerAdvice extends ResponseEntityExceptionHandler {
+  private static final String GENERAL_EXCEPTION_MESSAGE_KEY = "app.Validations.Exception.Message";
+
+  @Autowired
+  private MessageSource messageSource;
+
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
       MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status,
@@ -30,21 +39,21 @@ public class CryptoExchangeControllerAdvice extends ResponseEntityExceptionHandl
   @ResponseBody
   public DefaultErrorInfo handleGdaxOrderBookException(
       GdaxOrderBookException exception, WebRequest request) {
-    return new DefaultErrorInfo(exception.getMessage());
+    final String message = messageSource.getMessage(exception.getMessageKey(), null, "",
+        Locale.ENGLISH);
+    return new DefaultErrorInfo(message);
   }
 
-  //Todo:sselman: Fix this
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler(value = Exception.class)
   @ResponseBody
-  public DefaultErrorInfo handleDefaultException(
-      Exception exception, WebRequest request) throws Exception {
-    //Todo:sselman: Double check this.
+  public DefaultErrorInfo handleDefaultException(Exception exception, WebRequest request)
+      throws Exception {
     if (AnnotationUtils.findAnnotation(exception.getClass(), ResponseStatus.class) != null) {
       throw exception;
     }
-
-    return new DefaultErrorInfo("There was an internal server error. Please try again in a few " +
-        "minutes.");
+    final String message = messageSource.getMessage(GENERAL_EXCEPTION_MESSAGE_KEY, null, "",
+        Locale.ENGLISH);
+    return new DefaultErrorInfo(message);
   }
 }

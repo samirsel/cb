@@ -32,12 +32,12 @@ public class CryptoEchangeRestApiServiceImpl implements CryptoExchangeRestApiSer
     mRestTemplate = builder.errorHandler(new ResponseErrorHandler() {
       @Override
       public boolean hasError(ClientHttpResponse response) throws IOException {
-        Logger.logMsg(Logger.DEBUG, "Test");
-        return response.getStatusCode() != HttpStatus.OK;
+        return response.getStatusCode().is2xxSuccessful();
       }
 
       @Override
       public void handleError(ClientHttpResponse response) throws IOException {
+        //Todo:sselman: Correct use of debugging here.
         Logger.logMsg(Logger.DEBUG, "Test");
       }
     }).build();

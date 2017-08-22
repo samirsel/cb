@@ -1,7 +1,14 @@
 package app.Validations;
 
 public class GdaxOrderBookException extends RuntimeException {
-  public GdaxOrderBookException(String message) {
-    super(message);
+  private final String messageKey;
+
+  public GdaxOrderBookException(String messageKey) {
+    super();
+    this.messageKey = messageKey;
+  }
+
+  public String getMessageKey() {
+    return messageKey;
   }
 }
