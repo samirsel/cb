@@ -16,7 +16,6 @@ public class CryptoServiceUtils {
   public static double calculatePrice(double amount, DerivedOrder[] orders) {
     double remainingAmount = amount;
     Double weightedSum = 0d;
-    Integer bla = Integer.valueOf("dsds");
     for (int i=0; i< orders.length && remainingAmount > 0; i++) {
       final DerivedOrder order = orders[i];
       if (order.amount > remainingAmount) {
