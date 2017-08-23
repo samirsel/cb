@@ -8,5 +8,5 @@ import app.models.OrderBook;
 
 @Service
 public interface CryptoExchangeRestApiService {
-  ResponseEntity<OrderBook> getOrderBook(String productId, String level) throws RestClientException;
+  ResponseEntity<OrderBook> getOrderBook(String productId, String level);
 }

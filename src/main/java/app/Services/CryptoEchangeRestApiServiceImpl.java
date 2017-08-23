@@ -9,12 +9,10 @@ import com.sun.media.jfxmedia.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import app.models.OrderBook;
@@ -44,8 +42,7 @@ public class CryptoEchangeRestApiServiceImpl implements CryptoExchangeRestApiSer
   }
 
   @Override
-  public ResponseEntity<OrderBook> getOrderBook(String productId, String level) throws
-      RestClientException {
+  public ResponseEntity<OrderBook> getOrderBook(String productId, String level) {
     final String requestSubPath = "/products/{productId}/book?level={level}";
     final String fullRequestUrl = GDAX_REST_HOST + requestSubPath;
     final Map<String, String> vars = new HashMap<>();
