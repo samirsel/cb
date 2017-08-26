@@ -3,9 +3,9 @@ package app.Controllers;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import app.Services.CryptoExchangeService;
 import app.models.Quote;
@@ -18,8 +18,12 @@ public class CryptoExchangeController {
   private CryptoExchangeService mCryptoExchangeService;
 
   @RequestMapping(value= "/quote", method = RequestMethod.POST)
-  public ResponseEntity<Quote> quote(@Valid @RequestBody QuoteRequestBody quoteRequestBody) {
-    final Quote quote = mCryptoExchangeService.getPriceQuote(quoteRequestBody);
-    return new ResponseEntity<>(quote, HttpStatus.OK);
+  public DeferredResult<ResponseEntity<Quote>> quote(
+      @Valid @RequestBody QuoteRequestBody quoteRequestBody) {
+
+    DeferredResult<ResponseEntity<Quote>> deferredResult = new DeferredResult<>();
+    mCryptoExchangeService.getPriceQuote(deferredResult, quoteRequestBody);
+    return deferredResult;
+    //return new ResponseEntity<>(quote, HttpStatus.OK);
   }
 }

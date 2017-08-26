@@ -1,9 +1,9 @@
 package app.models;
 
 public class DefaultErrorInfo {
-  public final String message;
+  public final String errorMessage;
 
   public DefaultErrorInfo(String message){
-    this.message = message;
+    this.errorMessage = message;
   }
 }

@@ -1,12 +1,15 @@
 package app.Services;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import app.Validations.GdaxOrderBookException;
 import app.models.DerivedOrder;
-import app.models.OrderBook;
 import app.models.Quote;
 import app.models.QuoteRequestBody;
 
@@ -15,50 +18,62 @@ public class CryptoExchangeServiceImpl implements CryptoExchangeService {
   private static final String GDAX_ORDER_BOOK_LEVEL = "2";
   private static final String ORDER_BOOK_NOT_FOUND_MESSAGE_KEY =
       "app.Validations.GdaxOrderBookException.OrderBookNotFoundMessage";
+  private static final String AMOUNT_TOO_BIG_MESSAGE_KEY=
+      "app.Validations.GdaxOrderBookException.AmountTooBigMessage";
 
   @Autowired
-  private CryptoExchangeRestApiService mCryptoEchangeRestApiService;
+  private CryptoExchangeAsyncRestApiService apiService;
 
   @Override
-  public Quote getPriceQuote(QuoteRequestBody quoteRequest) {
-    final double amountBaseCurrency = Double.valueOf(quoteRequest.getAmount());
+  public void getPriceQuote(DeferredResult<ResponseEntity<Quote>> deferredResult,
+                             QuoteRequestBody quoteRequest) {
 
-    final DerivedOrder[] derivedOrders = getDerivedAsksOrBids(quoteRequest);
-    //Todo:sselman:validateOrderBook(orderBook);
-
-    final double price = CryptoServiceUtils.calculatePrice(amountBaseCurrency, derivedOrders);
-    //Todo:sselman: Double check if you can convert strings to Doubles and work with Doubles.
-
-    final double amountQuoteCurrency = amountBaseCurrency * price;
-    return new Quote(String.valueOf(price), String.valueOf(amountQuoteCurrency),
-        quoteRequest.getQuote_currency());
-  }
-
-  private DerivedOrder [] getDerivedAsksOrBids(QuoteRequestBody quoteRequest) {
-    boolean isReverseOrderBook = false;
-
-    // Try order-book BaseCurrency-QuoteCurrency
+    // Issue a request for OrderBook <BaseCurrency-QuoteCurrency>
     final String productId = CryptoServiceUtils.getCurrencyPair(quoteRequest.getBase_currency(),
         quoteRequest.getQuote_currency());
+    //Todo:sselman:validateOrderBook(orderBook);
+    final CompletableFuture<DerivedOrder[]> orderBookFuture =
+        apiService.getOrderBook(productId, GDAX_ORDER_BOOK_LEVEL, quoteRequest.getAction(), false);
 
-    ResponseEntity<OrderBook> orderBookResponseEntity =
-        mCryptoEchangeRestApiService.getOrderBook(productId, GDAX_ORDER_BOOK_LEVEL);
+    // GDAX might not support this orderBook but instead supports the reverse order book.
+    final String reverseProductId = CryptoServiceUtils.getCurrencyPair(
+        quoteRequest.getQuote_currency(), quoteRequest.getBase_currency());
+    //Todo:sselman:validateOrderBook(orderBook);
+    final CompletableFuture<DerivedOrder[]> reverseOrderBookFuture =
+        apiService.getOrderBook(reverseProductId, GDAX_ORDER_BOOK_LEVEL, quoteRequest.getAction(),
+            true);
 
-    if (!orderBookResponseEntity.getStatusCode().is2xxSuccessful()) {
-      // This orderBook is not supported by Gdax. Try the reverse order book.
-      final String reverseProductId = CryptoServiceUtils.getCurrencyPair(
-          quoteRequest.getQuote_currency(), quoteRequest.getBase_currency());
-      orderBookResponseEntity = mCryptoEchangeRestApiService.getOrderBook(reverseProductId,
-          GDAX_ORDER_BOOK_LEVEL);
-      if (!orderBookResponseEntity.getStatusCode().is2xxSuccessful()) {
-        throw new GdaxOrderBookException(ORDER_BOOK_NOT_FOUND_MESSAGE_KEY);
+    orderBookFuture.thenAccept(derivedOrders -> {
+      final Quote quote = CryptoServiceUtils.CalculateQuoteFromOrders(quoteRequest, derivedOrders);
+      if (quote == null) {
+        deferredResult.setErrorResult(new GdaxOrderBookException(AMOUNT_TOO_BIG_MESSAGE_KEY));
+      } else {
+        deferredResult.setResult(new ResponseEntity<>(quote, HttpStatus.OK));
       }
-      isReverseOrderBook = true;
-    }
+    });
 
-    final OrderBook orderBook = orderBookResponseEntity.getBody();
-    final Object[][] relevantOrders = CryptoServiceUtils.getBidsOrAsks(orderBook,
-        quoteRequest.getAction(), isReverseOrderBook);
-    return CryptoServiceUtils.generateDerivedAsksOrBids(relevantOrders, isReverseOrderBook);
+    reverseOrderBookFuture.thenAccept(derivedOrders -> {
+      final Quote quote = CryptoServiceUtils.CalculateQuoteFromOrders(quoteRequest, derivedOrders);
+      if (quote == null) {
+        deferredResult.setErrorResult(new GdaxOrderBookException(AMOUNT_TOO_BIG_MESSAGE_KEY));
+      } else {
+        deferredResult.setResult(new ResponseEntity<>(quote, HttpStatus.OK));
+      }
+    });
+
+    final CompletableFuture<DerivedOrder[]> exHandledOrderBookFuture =
+        orderBookFuture.exceptionally(throwable -> null);
+
+    final CompletableFuture<DerivedOrder[]> exHandledReverseOrderBookFuture =
+        reverseOrderBookFuture.exceptionally(throwable -> null);
+
+    exHandledOrderBookFuture.thenCombine(exHandledReverseOrderBookFuture,
+        (derivedOrders, derivedOrders2) -> {
+          if (derivedOrders == null && derivedOrders2 == null) {
+            deferredResult.setErrorResult(new GdaxOrderBookException(ORDER_BOOK_NOT_FOUND_MESSAGE_KEY));
+          }
+          return null;
+        }
+    );
   }
 }
