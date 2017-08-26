@@ -49,7 +49,6 @@ public class CryptoServiceUtils {
     final DerivedOrder[] derivedOrders = new DerivedOrder[orders.length];
     for(int i=0; i< orders.length; i++) {
       final Object[] order = orders[i];
-      //Todo:sselman Null check these.
       final double orderSizeForwardBook = Double.valueOf((String) order[INDEX_SIZE]);
       final int numOrdersForwardBook = (Integer) order[INDEX_NUM_ORDERS];
       final double unitPriceForwardBook = Double.valueOf((String) order[INDEX_PRICE]);
@@ -96,7 +95,6 @@ public class CryptoServiceUtils {
       public void onSuccess(T result) {
         completableFuture.complete(result);
       }
-
       @Override
       public void onFailure(Throwable t) {
         completableFuture.completeExceptionally(t);

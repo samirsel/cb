@@ -24,6 +24,5 @@ public class CryptoExchangeController {
     DeferredResult<ResponseEntity<Quote>> deferredResult = new DeferredResult<>();
     mCryptoExchangeService.getPriceQuote(deferredResult, quoteRequestBody);
     return deferredResult;
-    //return new ResponseEntity<>(quote, HttpStatus.OK);
   }
 }

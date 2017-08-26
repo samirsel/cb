@@ -31,18 +31,16 @@ public class CryptoExchangeServiceImpl implements CryptoExchangeService {
     // Issue a request for OrderBook <BaseCurrency-QuoteCurrency>
     final String productId = CryptoServiceUtils.getCurrencyPair(quoteRequest.getBase_currency(),
         quoteRequest.getQuote_currency());
-    //Todo:sselman:validateOrderBook(orderBook);
     final CompletableFuture<DerivedOrder[]> orderBookFuture =
         apiService.getOrderBook(productId, GDAX_ORDER_BOOK_LEVEL, quoteRequest.getAction(), false);
 
-    // GDAX might not support this orderBook but instead supports the reverse order book.
+    // Gdax might not support this orderBook but instead supports the reverse order book.
     final String reverseProductId = CryptoServiceUtils.getCurrencyPair(
         quoteRequest.getQuote_currency(), quoteRequest.getBase_currency());
-    //Todo:sselman:validateOrderBook(orderBook);
     final CompletableFuture<DerivedOrder[]> reverseOrderBookFuture =
         apiService.getOrderBook(reverseProductId, GDAX_ORDER_BOOK_LEVEL, quoteRequest.getAction(),
             true);
-
+    
     orderBookFuture.thenAccept(derivedOrders -> {
       final Quote quote = CryptoServiceUtils.CalculateQuoteFromOrders(quoteRequest, derivedOrders);
       if (quote == null) {
@@ -63,7 +61,6 @@ public class CryptoExchangeServiceImpl implements CryptoExchangeService {
 
     final CompletableFuture<DerivedOrder[]> exHandledOrderBookFuture =
         orderBookFuture.exceptionally(throwable -> null);
-
     final CompletableFuture<DerivedOrder[]> exHandledReverseOrderBookFuture =
         reverseOrderBookFuture.exceptionally(throwable -> null);
 

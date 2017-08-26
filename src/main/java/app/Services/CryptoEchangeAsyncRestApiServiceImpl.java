@@ -44,7 +44,7 @@ public class CryptoEchangeAsyncRestApiServiceImpl implements CryptoExchangeAsync
     final ListenableFuture<DerivedOrder[]> derivedOrderListenableFuture =
         new OrderBookAdapter(orderBooksFuture, userAction, isReverseOrderBook);
 
-    return CryptoServiceUtils.<DerivedOrder[]>buildCompletableFutureFromListenableFuture(
+    return CryptoServiceUtils.buildCompletableFutureFromListenableFuture(
         derivedOrderListenableFuture);
   }
 }
