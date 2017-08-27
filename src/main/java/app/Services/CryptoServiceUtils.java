@@ -19,6 +19,13 @@ public class CryptoServiceUtils {
   private static final int INDEX_SIZE = 1;
   private static final int INDEX_NUM_ORDERS = 2;
 
+  /**
+   * Calculates the price quote given the set of relevant orders.
+   * @param quoteRequest The request for a price quote
+   * @param orders The list of relevant orders.
+   * @return An instance of a Quote that contains the price quote information or null in case
+   * the amount provided is too big.
+   */
   @Nullable
   public static Quote CalculateQuoteFromOrders(QuoteRequestBody quoteRequest,
                                                 DerivedOrder[] orders) {
@@ -44,6 +51,13 @@ public class CryptoServiceUtils {
         quoteRequest.getQuote_currency());
   }
 
+  /**
+   * Generates an array of DerivedOrders given an orderbook and whether it's the forward or
+   * reverse orderbook.
+   * @param orders The orderbook as retrieved from gdax.
+   * @param isReverseOrderBook Whether this is the forward or reverse order book.
+   * @return An array of DerivedOrders.
+   */
   public static DerivedOrder[] generateDerivedAsksOrBids(Object[][] orders,
                                                          boolean isReverseOrderBook) {
     final DerivedOrder[] derivedOrders = new DerivedOrder[orders.length];
@@ -79,6 +93,13 @@ public class CryptoServiceUtils {
     return currency1 + "-" + currency2;
   }
 
+  /**
+   * Builds a CompletableFuture from a ListenableFuture. CompletableFutures offer a lot more
+   * functionality such as combining multiple futures, applying functionaly transformations...
+   *
+   * @param listenableFuture The listenable future.
+   * @return The corresponding CompletableFuture.
+   */
   public static <T> CompletableFuture<T> buildCompletableFutureFromListenableFuture(
       final ListenableFuture<T> listenableFuture) {
     CompletableFuture<T> completableFuture = new CompletableFuture<T>() {
@@ -89,7 +110,6 @@ public class CryptoServiceUtils {
         return result;
       }
     };
-
     listenableFuture.addCallback(new ListenableFutureCallback<T>() {
       @Override
       public void onSuccess(T result) {

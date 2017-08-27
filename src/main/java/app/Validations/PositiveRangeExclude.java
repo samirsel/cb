@@ -15,13 +15,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Target({ FIELD, METHOD, PARAMETER, ANNOTATION_TYPE })
 @Retention(RUNTIME)
-@Constraint(validatedBy = RangeExcludeValidator.class)
+@Constraint(validatedBy = PositiveRangeExcludeValidator.class)
 @Documented
 @Range
 @ReportAsSingleViolation
-public @interface RangeExclude {
+public @interface PositiveRangeExclude {
 
-  String message() default "{app.Validations.RangeExclude.DefaultMessage}";
+  String message() default "{app.Validations.PositiveRangeExclude.DefaultMessage}";
 
   Class<?>[] groups() default { };
 
@@ -33,6 +33,6 @@ public @interface RangeExclude {
   @Retention(RUNTIME)
   @Documented
   @interface List {
-    RangeExclude[] value();
+    PositiveRangeExclude[] value();
   }
 }

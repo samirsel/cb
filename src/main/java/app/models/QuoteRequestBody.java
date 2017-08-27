@@ -3,7 +3,7 @@ package app.models;
 import org.hibernate.validator.constraints.NotBlank;
 
 import app.Validations.CheckStringVal;
-import app.Validations.RangeExclude;
+import app.Validations.PositiveRangeExclude;
 
 public class QuoteRequestBody {
     @NotBlank(message = "{org.hibernate.validator.constraints.NotBlank.ActionMessage}")
@@ -18,7 +18,7 @@ public class QuoteRequestBody {
     private String quote_currency;
 
     @NotBlank(message = "{org.hibernate.validator.constraints.NotBlank.AmountMessage}")
-    @RangeExclude(value = {0}, message = "{app.Validations.RangeExclude.AmountMessage}")
+    @PositiveRangeExclude(value = {0}, message = "{app.Validations.PositiveRangeExclude.AmountMessage}")
     private String amount;
 
     public QuoteRequestBody() {

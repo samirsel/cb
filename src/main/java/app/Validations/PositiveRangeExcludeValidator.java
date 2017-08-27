@@ -3,11 +3,12 @@ package app.Validations;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class RangeExcludeValidator implements ConstraintValidator<RangeExclude, String> {
+public class PositiveRangeExcludeValidator implements
+    ConstraintValidator<PositiveRangeExclude, String> {
   private double[] excludedVals;
 
   @Override
-  public void initialize(RangeExclude constraintAnnotation) {
+  public void initialize(PositiveRangeExclude constraintAnnotation) {
     excludedVals = constraintAnnotation.value();
   }
 

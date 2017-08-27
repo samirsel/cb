@@ -1,11 +1,12 @@
 package app.Controllers;
 
+import java.util.concurrent.CompletableFuture;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.async.DeferredResult;
 
 import app.Services.CryptoExchangeService;
 import app.models.Quote;
@@ -18,11 +19,11 @@ public class CryptoExchangeController {
   private CryptoExchangeService mCryptoExchangeService;
 
   @RequestMapping(value= "/quote", method = RequestMethod.POST)
-  public DeferredResult<ResponseEntity<Quote>> quote(
+  public CompletableFuture<ResponseEntity<Quote>> quote(
       @Valid @RequestBody QuoteRequestBody quoteRequestBody) {
 
-    DeferredResult<ResponseEntity<Quote>> deferredResult = new DeferredResult<>();
-    mCryptoExchangeService.getPriceQuote(deferredResult, quoteRequestBody);
-    return deferredResult;
+    CompletableFuture<ResponseEntity<Quote>> finalResultFuture = new CompletableFuture<>();
+    mCryptoExchangeService.generatePriceQuote(finalResultFuture, quoteRequestBody);
+    return finalResultFuture;
   }
 }

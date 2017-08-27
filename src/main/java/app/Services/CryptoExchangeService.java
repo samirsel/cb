@@ -1,14 +1,21 @@
 package app.Services;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.async.DeferredResult;
 
 import app.models.Quote;
 import app.models.QuoteRequestBody;
 
 @Service
 public interface CryptoExchangeService {
-  void getPriceQuote(DeferredResult<ResponseEntity<Quote>> deferredResult,
-                      QuoteRequestBody quoteRequest);
+  /**
+   * This service method generates the requests price quote and sets it in the passed Completable
+   * future (deferredResult).
+   * @param finalResultFuture This will hold the quoted price once the processing is complete.
+   * @param quoteRequest The request received for a price quote.
+   */
+  void generatePriceQuote(CompletableFuture<ResponseEntity<Quote>> finalResultFuture,
+                          QuoteRequestBody quoteRequest);
 }
