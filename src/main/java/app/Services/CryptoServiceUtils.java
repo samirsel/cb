@@ -2,8 +2,6 @@ package app.Services;
 
 import java.util.concurrent.CompletableFuture;
 
-import com.sun.istack.internal.Nullable;
-
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
@@ -26,7 +24,6 @@ public class CryptoServiceUtils {
    * @return An instance of a Quote that contains the price quote information or null in case
    * the amount provided is too big.
    */
-  @Nullable
   public static Quote CalculateQuoteFromOrders(QuoteRequestBody quoteRequest,
                                                 DerivedOrder[] orders) {
     final double amountBaseCurrency = Double.valueOf(quoteRequest.getAmount());
